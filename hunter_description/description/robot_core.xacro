@@ -22,11 +22,23 @@
 
   <link name="chassis">
     <xacro:mesh name="chassis"/>
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <box size="0.80 0.55 0.25"/>
+      </geometry>
+    </collision>
     <xacro:inertial_chassis/>
   </link>
 
   <link name="rear_left_wheel">
     <xacro:mesh name="rear_left_wheel"/>
+    <collision>
+      <origin xyz="0 0 0" rpy="${pi/2} 0 0"/>
+      <geometry>
+        <cylinder radius="0.165" length="0.10"/>
+      </geometry>
+    </collision>
     <xacro:inertial_wheel/>
   </link>
   <joint name="rear_left_wheel_joint" type="continuous">
@@ -41,6 +53,12 @@
 
   <link name="rear_right_wheel">
     <xacro:mesh name="rear_right_wheel"/>
+    <collision>
+      <origin xyz="0 0 0" rpy="${pi/2} 0 0"/>
+      <geometry>
+        <cylinder radius="0.165" length="0.10"/>
+      </geometry>
+    </collision>
     <xacro:inertial_wheel/>
   </link>
   <joint name="rear_right_wheel_joint" type="continuous">
@@ -69,6 +87,12 @@
 
   <link name="front_left_wheel">
     <xacro:mesh name="front_left_wheel"/>
+    <collision>
+      <origin xyz="0 0 0" rpy="${pi/2} 0 0"/>
+      <geometry>
+        <cylinder radius="0.165" length="0.10"/>
+      </geometry>
+    </collision>
     <xacro:inertial_wheel/>
   </link>
   <joint name="front_left_wheel_joint" type="continuous">
@@ -94,6 +118,12 @@
   
   <link name="front_right_wheel">
     <xacro:mesh name="front_right_wheel"/>
+    <collision>
+      <origin xyz="0 0 0" rpy="${pi/2} 0 0"/>
+      <geometry>
+        <cylinder radius="0.165" length="0.10"/>
+      </geometry>
+    </collision>
     <xacro:inertial_wheel/>
   </link>
   <joint name="front_right_wheel_joint" type="continuous">

@@ -14,6 +14,11 @@ from launch.actions import ExecuteProcess, IncludeLaunchDescription, RegisterEve
 
 from ament_index_python.packages import get_package_share_directory
 
+from typing import Final
+
+PKG_HUNTER_DESCRIPTION: Final = 'hunter_description'
+PKG_HUNTER_GAZEBO: Final = 'hunter_gazebo'
+
 def generate_launch_description():
     # Declare the use_sim_time argument
     use_sim_time = DeclareLaunchArgument(
@@ -25,13 +30,23 @@ def generate_launch_description():
     # Launch configuration for use_sim_time
     use_sim_time_config = LaunchConfiguration('use_sim_time')
 
-    gazebo_params_file = os.path.join(get_package_share_directory("hunter_gazebo"), 'config', 'gazebo_params.yaml')
-
+    pkg_ros_gz_sim = get_package_share_directory('ros_gz_sim')
+    ros_gz_bridge = Node(
+        package="ros_gz_bridge",
+        executable="parameter_bridge",
+        arguments=[
+            "/clock@rosgraph_msgs/msg/Clock[gz.msgs.Clock"
+        ],
+        output="screen",
+    )
     # Include the Gazebo launch file, provided by the gazebo_ros package
-    gazebo = IncludeLaunchDescription(
-        PythonLaunchDescriptionSource([os.path.join(
-            get_package_share_directory('gazebo_ros'), 'launch', 'gazebo.launch.py')]),
-        launch_arguments={'extra_gazebo_args': '--ros-args --params-file ' + gazebo_params_file}.items()
+    gz_sim = IncludeLaunchDescription(
+        PythonLaunchDescriptionSource(
+            os.path.join(pkg_ros_gz_sim, 'launch', 'gz_sim.launch.py')
+        ),
+        launch_arguments={
+            'gz_args': '-r empty.sdf'
+        }.items(),
     )
 
     hunter_description_path = os.path.join(
@@ -43,7 +58,7 @@ def generate_launch_description():
             PathJoinSubstitution([FindExecutable(name="xacro")]),
             " ",
             PathJoinSubstitution(
-                [FindPackageShare("hunter_description"), "description", 'robot.urdf.xacro']
+                [FindPackageShare(PKG_HUNTER_DESCRIPTION), "description", 'robot.urdf.xacro']
             ),
         ]
     )
@@ -59,11 +74,10 @@ def generate_launch_description():
     )
 
     spawn_entity = Node(
-        package='gazebo_ros',
-        executable='spawn_entity.py',
-        arguments=['-topic', 'robot_description', '-entity', 'hunter'],
-        output='screen',
-        parameters=[{'use_sim_time': use_sim_time_config}]
+        package='ros_gz_sim',
+        executable='create',
+        arguments=['-topic', 'robot_description', '-name', 'hunter'],
+        output='screen'
     )
 
     load_joint_state_broadcaster = ExecuteProcess(
@@ -103,7 +117,8 @@ def generate_launch_description():
                 on_exit=[load_tricycle_controller],
             )
         ),
-        gazebo,
+        ros_gz_bridge,
+        gz_sim,
         rviz,
         node_robot_state_publisher,
         spawn_entity,
