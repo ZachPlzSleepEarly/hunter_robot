@@ -19,6 +19,7 @@ from typing import Final
 PKG_HUNTER_DESCRIPTION: Final = 'hunter_description'
 PKG_HUNTER_GAZEBO: Final = 'hunter_gazebo'
 
+
 def generate_launch_description():
     # Declare the use_sim_time argument
     use_sim_time = DeclareLaunchArgument(
@@ -34,9 +35,12 @@ def generate_launch_description():
     ros_gz_bridge = Node(
         package="ros_gz_bridge",
         executable="parameter_bridge",
-        arguments=[
-            "/clock@rosgraph_msgs/msg/Clock[gz.msgs.Clock"
-        ],
+        parameters=[{
+            'config_file': PathJoinSubstitution([
+                FindPackageShare(PKG_HUNTER_GAZEBO), "config", 'ros_gz_bridge.yaml'
+            ],
+            )
+        }],
         output="screen",
     )
     # Include the Gazebo launch file, provided by the gazebo_ros package
