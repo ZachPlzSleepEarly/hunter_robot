@@ -7,11 +7,8 @@ from launch.event_handlers import OnProcessExit
 
 from launch.conditions import IfCondition
 
-from launch_ros.substitutions import FindPackageShare
-from launch_ros.parameter_descriptions import ParameterValue
-
 from launch.launch_description_sources import PythonLaunchDescriptionSource
-from launch.substitutions import Command, FindExecutable, PathJoinSubstitution, LaunchConfiguration
+from launch.substitutions import LaunchConfiguration
 from launch.actions import ExecuteProcess, IncludeLaunchDescription, RegisterEventHandler, DeclareLaunchArgument
 
 from ament_index_python.packages import get_package_share_directory
@@ -96,6 +93,18 @@ def generate_launch_description():
         }],
         output="screen",
     )
+
+    # /cmd_vel 到 /ackermann_like_controller/reference 桥接节点
+    cmd_vel_bridge_node = Node(
+        package=PKG_HUNTER_GAZEBO,
+        executable='cmd_vel_to_ackermann_ref.py',
+        output='screen',
+        parameters=[{
+            'input_topic': '/cmd_vel',
+            'output_topic': '/ackermann_like_controller/reference',
+            'frame_id': 'base_link',
+        }]
+    )
     
     # Start robot state publisher
     robot_state_publisher = Node(
@@ -167,6 +176,7 @@ def generate_launch_description():
         ros_gz_bridge,
 
         # ROS2 侧
+        cmd_vel_bridge_node,
         robot_state_publisher,
         joint_state_broadcaster_spanwer_node,
         delay_ackermann_after_joint_state_broadcaster_spawner_node,
