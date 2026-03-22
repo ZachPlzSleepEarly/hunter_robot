@@ -1,6 +1,7 @@
 <?xml version="1.0"?>
 <robot xmlns:xacro="http://www.ros.org/wiki/xacro">
 
+  <!-- 声明这些 joint 暴露哪些 command/state interfaces，以及它们属于哪个 hardware component -->
   <ros2_control name="GazeboSystem" type="system">
     <hardware>
       <plugin>gz_ros2_control/GazeboSimSystem</plugin>
@@ -11,7 +12,7 @@
       <state_interface name="position"/>
     </joint>
     <joint name="front_right_steering_joint">
-      <mimic joint="front_left_steering_joint" multiplier="1" />
+      <command_interface name="position"/>
       <state_interface name="position"/>
     </joint>
 
@@ -21,7 +22,7 @@
       <state_interface name="position"/>
     </joint>
     <joint name="rear_right_wheel_joint">
-      <mimic joint="rear_left_wheel_joint" multiplier="1" />
+      <command_interface name="velocity"/>
       <state_interface name="velocity"/>
       <state_interface name="position"/>
     </joint>
@@ -36,6 +37,8 @@
     </joint>
     
   </ros2_control>
+
+  <!-- 在 Gazebo 启动时实例化 controller_manager，并把 Gazebo model 接到 ros2_control -->
   <gazebo>
     <plugin filename="libgz_ros2_control-system.so" name="gz_ros2_control::GazeboSimROS2ControlPlugin">
       <parameters>$(find hunter_description)/config/ackermann_like_controller.yaml</parameters>

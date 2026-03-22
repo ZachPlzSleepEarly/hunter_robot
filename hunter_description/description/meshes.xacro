@@ -24,11 +24,12 @@
 
   <xacro:macro name="gazebo_friction" params="reference">
     <gazebo reference="${reference}">
-      <mu1 value="1.0"/>
-      <mu2 value="0.5"/>
-      <kp value="10000000.0" />
+      <mu1 value="0.6"/>
+      <mu2 value="0.6"/>
+      <!-- 接触刚性太高,小车会弹起来。 -->
+      <!-- <kp value="10000000.0" />
       <kd value="1.0" />
-      <fdir1 value="1 0 0"/>
+      <fdir1 value="1 0 0"/> -->
     </gazebo>
   </xacro:macro>
 

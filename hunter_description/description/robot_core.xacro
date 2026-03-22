@@ -23,9 +23,9 @@
   <link name="chassis">
     <xacro:mesh name="chassis"/>
     <collision>
-      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <origin xyz="0 0 -0.12" rpy="0 0 0"/>
       <geometry>
-        <box size="0.80 0.55 0.25"/>
+        <box size="0.85 0.3 0.25"/>
       </geometry>
     </collision>
     <xacro:inertial_chassis/>
@@ -34,7 +34,7 @@
   <link name="rear_left_wheel">
     <xacro:mesh name="rear_left_wheel"/>
     <collision>
-      <origin xyz="0 0 0" rpy="${pi/2} 0 0"/>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
       <geometry>
         <cylinder radius="0.165" length="0.10"/>
       </geometry>
@@ -46,15 +46,16 @@
     <child link="rear_left_wheel"/> 
     <origin xyz="${x_base_to_rear} ${y_base_to_wheel} ${z_base_to_wheel}" rpy="${pi/2} 0 0" />
     <axis xyz="0 0 -1" />
-    <dynamics damping="0.2" friction="15"/> 
-    <limit effort="10.0" velocity="10.0"/>
+    <!-- 阻力不可以太大否则根本转不动 -->
+    <dynamics damping="0.05" friction="0.0"/>
+    <limit effort="100.0" velocity="30.0"/>
   </joint>
   <xacro:gazebo_friction reference="rear_left_wheel"/>
 
   <link name="rear_right_wheel">
     <xacro:mesh name="rear_right_wheel"/>
     <collision>
-      <origin xyz="0 0 0" rpy="${pi/2} 0 0"/>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
       <geometry>
         <cylinder radius="0.165" length="0.10"/>
       </geometry>
@@ -66,9 +67,9 @@
     <child link="rear_right_wheel"/> 
     <origin xyz="${x_base_to_rear} -${y_base_to_wheel} ${z_base_to_wheel}" rpy="${pi/2} 0 0" />
     <axis xyz="0 0 -1"/>
-    <dynamics damping="0.2" friction="15"/> 
-    <limit effort="10.0" velocity="10.0"/>
-    <mimic joint="rear_left_wheel_joint" multiplier="1.0" offset="0.0"/>
+    <!-- 阻力不可以太大否则根本转不动 -->
+    <dynamics damping="0.05" friction="0.0"/>
+    <limit effort="100.0" velocity="30.0"/>
   </joint>
   <xacro:gazebo_friction reference="rear_right_wheel"/>
 
@@ -81,14 +82,14 @@
     <child link="front_left_steering_link"/> 
     <origin xyz="${x_base_to_front} ${y_base_to_wheel} ${z_base_to_wheel}" rpy="${pi/2} 0 0" />
     <axis   xyz="0 1 0" />
-    <limit  lower="-${max_steer_angle_central}"  upper="${max_steer_angle_central}"  effort="10.0"  velocity="1" />
-    <dynamics damping="0.2"/>
+    <limit  lower="-${max_steer_angle_central}"  upper="${max_steer_angle_central}"  effort="100.0"  velocity="2.0" />
+    <dynamics damping="0.5" friction="0.0"/>
   </joint>
 
   <link name="front_left_wheel">
     <xacro:mesh name="front_left_wheel"/>
     <collision>
-      <origin xyz="0 0 0" rpy="${pi/2} 0 0"/>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
       <geometry>
         <cylinder radius="0.165" length="0.10"/>
       </geometry>
@@ -101,6 +102,8 @@
     <origin xyz="0 0 0" rpy="0 0 0" />
     <axis   xyz="0 0 -1" />
   </joint>
+  <!-- 需要给前轮也补充摩擦系数 -->
+  <xacro:gazebo_friction reference="front_left_wheel"/>
 
   <link name="front_right_steering_link">
     <xacro:virtual/>
@@ -111,15 +114,14 @@
     <child link="front_right_steering_link"/> 
     <origin xyz="${x_base_to_front}  -${y_base_to_wheel} ${z_base_to_wheel}" rpy="${pi/2} 0 0" />
     <axis   xyz="0 1 0" />
-    <limit  lower="-${max_steer_angle_central}"  upper="${max_steer_angle_central}"  effort="10.0"  velocity="1" />
-    <dynamics damping="0.2"/>
-    <mimic joint="front_left_steering_joint" multiplier="1.0" offset="0.0"/>
+    <limit  lower="-${max_steer_angle_central}"  upper="${max_steer_angle_central}"  effort="100.0"  velocity="2.0" />
+    <dynamics damping="0.5" friction="0.0"/>
   </joint>
   
   <link name="front_right_wheel">
     <xacro:mesh name="front_right_wheel"/>
     <collision>
-      <origin xyz="0 0 0" rpy="${pi/2} 0 0"/>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
       <geometry>
         <cylinder radius="0.165" length="0.10"/>
       </geometry>
@@ -132,5 +134,7 @@
     <origin xyz="0 0 0" rpy="0 0 0" />
     <axis   xyz="0 0 -1" />
   </joint>
+  <!-- 需要给前轮也补充摩擦系数 -->
+  <xacro:gazebo_friction reference="front_right_wheel"/>
 
 </robot>
