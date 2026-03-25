@@ -19,6 +19,7 @@ import xacro
 
 PKG_HUNTER_DESCRIPTION: Final = 'hunter_description'
 PKG_HUNTER_GAZEBO: Final = 'hunter_gazebo'
+PKG_ROS_GZ_SIM: Final = 'ros_gz_sim'
 JOINT_STATE_BROADCASTER_CONTROLLER: Final = 'joint_state_broadcaster'
 ACKERMANN_LIKE_CONTROLLER: Final = 'ackermann_like_controller'
 
@@ -48,7 +49,7 @@ def generate_launch_description():
     # Package Directories
     pkg_hunter_description = get_package_share_directory(PKG_HUNTER_DESCRIPTION)
     pkg_hunter_gazebo = get_package_share_directory(PKG_HUNTER_GAZEBO)
-    pkg_ros_gz_sim = get_package_share_directory('ros_gz_sim')
+    pkg_ros_gz_sim = get_package_share_directory(PKG_ROS_GZ_SIM)
 
     # Declare the use_sim_time argument
     use_sim_time = {'use_sim_time': use_sim_time_arg}
@@ -60,7 +61,7 @@ def generate_launch_description():
     ros_gz_bridge_config = os.path.join(pkg_hunter_gazebo, 'config', 'ros_gz_bridge.yaml')
 
     ros2_control_config_file = os.path.join(pkg_hunter_description, 'config', 'ackermann_like_controller.yaml')
-    rviz_config_file = os.path.join(pkg_hunter_description, 'rviz', 'robot_view.rviz')    
+    rviz_config_file = os.path.join(pkg_hunter_description, 'rviz', 'robot_view.rviz')
 
     # Start gz sim
     gz_sim_ndoe = IncludeLaunchDescription(
@@ -75,7 +76,7 @@ def generate_launch_description():
         package='ros_gz_sim',
         executable='create',
         arguments=[
-            '-topic', '/robot_description', 
+            '-topic', '/robot_description',
             '-name', 'hunter',
             "-z", "1.5",
             "-x", "0.0",
@@ -105,7 +106,7 @@ def generate_launch_description():
             'frame_id': 'base_link',
         }]
     )
-    
+
     # Start robot state publisher
     robot_state_publisher = Node(
         package='robot_state_publisher',
@@ -137,7 +138,7 @@ def generate_launch_description():
             ACKERMANN_LIKE_CONTROLLER,
             '--controller-manager', '/controller_manager',
             '--param-file', ros2_control_config_file,
-            '--controller-ros-args', '-r /ackermann_like_controller/tf_odometry:=/tf',    
+            '--controller-ros-args', '-r /ackermann_like_controller/tf_odometry:=/tf',
         ],
     )
     rviz_node = Node(
@@ -165,8 +166,8 @@ def generate_launch_description():
 
     # Launch the rqt_joint_trajectory_controller standalone
     rqt_robot_steering = ExecuteProcess(
-            cmd=['rqt', '--standalone', 'rqt_robot_steering'],
-            output='screen',
+        cmd=['rqt', '--standalone', 'rqt_robot_steering'],
+        output='screen',
     )
 
     nodes = [
